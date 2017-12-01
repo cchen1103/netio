@@ -29,7 +29,7 @@ class sniff_sock:
 
 
 import struct
-from netio.utils import header, decoder
+from netio.utils import headers, decoder
 
 def extract(data):
     """
@@ -37,15 +37,17 @@ def extract(data):
     return protocol and its attributes
     """
     decoders = {
-        header.ETHERNET: decoder.decode_eth,
-        header.IP: decoder.decode_ip,
-        header.TCP: decoder.decode_tcp,
-        header.UDP: decoder.decode_udp,
+        headers.ETHERNET:    decoder.decode_eth,
+        headers.IP:          decoder.decode_ip,
+        headers.TCP:         decoder.decode_tcp,
+        headers.UDP:         decoder.decode_udp,
         }
-    proto = header.ETHERNET
+
+    proto = headers.ETHERNET
     attributes = dict()
+
     while proto in decoders:
-        protocol = header.NAME[proto]    # update protocol if there is more decoding
+        protocol = headers.NAME[proto]    # update protocol if there is more decoding
         attr, proto, data = decoders[proto](data)
         attributes[protocol] = attr
     return attributes

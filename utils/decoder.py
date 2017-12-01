@@ -2,13 +2,23 @@ import socket
 from struct import unpack
 from functools import lru_cache
 from netio.utils import headers
-from netio.decorator import attribute_only
 
 
 class DecodeException(Exception):
     def __init__(self, dErrorMessage):
         Exception.__init__(self, "Packets decoder error {0}".format(dErrorMessage))
         self.dErrorMessage = dErrorMessage
+
+
+def attribute_only(func):
+    """
+    wraps to return only packet decoder attributes and cut of net next_protocol
+    """
+    @wraps
+    def inner(*args, **kwargs):
+        attr, next_proto = func(*args, **kwargs)
+        return attr
+    return inner
 
 
 split2 = lambda x, y: (x[:y], x[y:])
