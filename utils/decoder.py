@@ -10,7 +10,7 @@ def decode_eth(data):
     """
     mac_addr = lambda x: "%.2x" % (ord(x))
     header, data = data[:14], data[14:] # ethernet header - 14 bytes
-    eth_header = unpack('!6s6sH', data)
+    eth_header = unpack('!6s6sH', header)
     protocol = socket.ntohs(eth_header[2])
     attributes = (':'.join(map(mac_addr,eth_header[0])), ':'.join(map(mac_addr,eth_header[1])))
     return attributes, protocol, data
