@@ -1,13 +1,12 @@
-from functools import wraps
+from functools import wraps, lru_cache
+from collections import deque
 
-def cached(mask):
+def attribute_only(func):
+    """
+    wraps to return only packet decoder attributes and cut of net next_protocol
+    """
     @wraps
-    def inner(func):
-        @wraps
-        def wrapper(arg1, arg2):
-            key = ''.join([j for i, j in zip(mask,arg2) if j != '0'])
-            if key not in cache:
-                cache[key] = func(arg1, arg2)
-            return cache[key]
-        return wrapper
+    def inner(*args, **kwargs):
+        attr, next_proto = func(*args, **kwargs)
+        return attr    
     return inner
