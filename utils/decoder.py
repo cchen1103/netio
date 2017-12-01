@@ -14,7 +14,7 @@ def attribute_only(func):
     """
     wraps to return only packet decoder attributes and cut of net next_protocol
     """
-    @wraps
+    @wraps(func)
     def inner(*args, **kwargs):
         attr, next_proto = func(*args, **kwargs)
         return attr
@@ -65,7 +65,6 @@ def _decode_ip(header):
     """
     ethenet_frame, ip_frame = split2(header, 14)# ethernet header - 14 bytes
     attributes, protocol = _decode_eth(ethenet_frame)    # decode ethernet frame first
-    #ip_frame, data = split2(data,(data[0] & 0xf) * 4)
 
     if protocol != headers.IP:
         raise DecodeException('Not IP packet, protocol number: (%d)' % protocol)
@@ -146,5 +145,5 @@ def decode_udp(header):
     udp_header = unpack('!HHHH', udp_frame)
     #next_proto = None  # no next protocol to relay on to decode
     attributes = attributes + (udp_header[0], udp_header[1])
-
+    
     return attributes
