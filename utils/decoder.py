@@ -112,7 +112,7 @@ def decode_tcp(header):
     """
     ip_h_len = (header[14] & 0xf) * 4 # ip header first byte high 4 bits * 4 are the IP header length
     ip_frame, tcp_frame = split2(header, 14 + ip_h_len)# ethernet header + ip header length
-    attributes, protocol = decode_ip(ip_frame)    # decode ethernet frame first
+    attributes, protocol = _decode_ip(ip_frame)    # decode ethernet frame first
 
     if protocol != headers.TCP:
         raise DecodeException('Not TCP packet, protocol number: (%d)' % protocol)
@@ -135,7 +135,7 @@ def decode_udp(header):
     """
     ip_h_len = (header[14] & 0xf) * 4 # ip header first byte high 4 bits * 4 are the IP header length
     ip_frame, udp_frame = split2(header, 14 + ip_h_len)# ethernet header + ip header length
-    attributes, protocol = decode_ip(ip_frame)    # decode ethernet frame first
+    attributes, protocol = _decode_ip(ip_frame)    # decode ethernet frame first
 
     if protocol != headers.UDP:
         raise DecodeException('Not UDP packet, protocol number: (%d)' % protocol)
