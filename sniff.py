@@ -32,31 +32,24 @@ import struct
 from netio.utils.header import Header
 from netio.utils import decoder
 
-ETHER_H_LEN = 14
-
-class packet_header:
+def header(data):
     """
-    decode ethernet data into ethernet, ip, and tcp/udp headers,
-    payload will be discard.
+    decode ethernet headers to ethernet, ip and tcp/udp attributes
+    return protocol and its attributes
     """
-    def __init__(self):
-        self.protocol = Header.ETHERNET
+    split2 = lambda x,y: (x[:y], x[y:])
 
-    def __call__(self, data):
-        """
-        decode data into tcp or udp headers
-        """
-        split2 = lambda x,y: (x[:y], x[y:])
-        eth_h, data = split2(data, ETHER_H_LEN)
-        self.protocol = decoder.decode_eth(eth_h)    # decode ethenet
-        if self.protocol == Header.IP:
-            ip_h, data = split2(data, (data[0] & 0xF) * 4)
-            self.protocol, self.src, self.dst, self.ip_ver = decoder.decode_ip(ip_h)
-        if self.protocol == Header.TCP:
-            pass
-        if self.protocol == Header.UDP:
-            pass
-
-
-def tick(proto, address):
-    pass
+    decoders = {
+        Header.ETHERNET: decoder.decode_eth,
+        Header.IP: decoder.decode_ip,
+        Header.TCP: decoder.decode_tcp,
+        Header.UDP: decoder.decode_udp,
+        }
+    proto = Header.ETHERNET
+    attributes = list()
+    while proto in decoders:
+        protocol = proto    # update protocol if there is more decoding
+        attr, proto, data = decoders[proto](data)
+        attributes = attributes + list(attr)
+    return protocol, tuple(attributes)
+    
