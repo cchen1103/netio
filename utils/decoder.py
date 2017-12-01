@@ -8,7 +8,7 @@ def decode_eth(data):
     can decode MAC address and upper level protocol
     for efficency, do not decode them (dest MAC, src MAC, protocol).
     """
-    mac_addr = lambda x: "%.2x" % (ord(x))
+    mac_addr = lambda x: "%.2x" % x
     header, data = data[:14], data[14:] # ethernet header - 14 bytes
     eth_header = unpack('!6s6sH', header)
     protocol = socket.ntohs(eth_header[2])
