@@ -74,7 +74,7 @@ def _decode_ip(header):
     ip_header = unpack('!BBHHHBBH4s4s', ip_frame[:20]) # currently only work on ipv4
     #version = ip_header[0] >> 4    # not IP version is not used at this point
     next_proto = ip_header[6]
-    attributes = attributes + _decode_ip(ip_header[-2:])
+    attributes = attributes + _decode_ip_addr(ip_header[-2:])
 
     return attributes, next_proto
 
@@ -92,7 +92,7 @@ def decode_ip(header):
 
 
 @lru_cache(maxsize=512)
-def _decode_ip_(data):
+def _decode_ip_addr(data):
     """
     decode ip header with lru cache to speed up process
 
@@ -145,5 +145,5 @@ def decode_udp(header):
     udp_header = unpack('!HHHH', udp_frame)
     #next_proto = None  # no next protocol to relay on to decode
     attributes = attributes + (udp_header[0], udp_header[1])
-    
+
     return attributes
