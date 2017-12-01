@@ -1,6 +1,6 @@
 import socket
 from struct import unpack
-from functools import lru_cache
+from functools import lru_cache, wraps
 from netio.utils import headers
 
 
