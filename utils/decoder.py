@@ -24,7 +24,7 @@ def decode_ip(data):
     ip_header = unpack('!BBHHHBBH4s4s', header[:20]) # currently only work on ipv4
     version = ip_header[0] >> 4
     protocol = ip_header[6]
-    ip_src, ip_dst = _decode_ip_addr(ip_header[-2])
+    ip_src, ip_dst = _decode_ip_addr(ip_header[-2:])
     attributes = (version, ip_src, ip_dst)
     return attributes, protocol, data
 
