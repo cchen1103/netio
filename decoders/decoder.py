@@ -1,8 +1,7 @@
 import socket
 from struct import unpack
 from functools import lru_cache, wraps
-from netio.utils import headers
-
+from .__packet_headers__ import Ethernet, Ip, Tcp, Udp
 
 class DecodeException(Exception):
     def __init__(self, dErrorMessage):
@@ -21,24 +20,6 @@ def attribute_only(func):
     return inner
 
 
-def filter_attr(*f_args):
-    """
-    filter only to selected attributes
-
-    input:  '*' | value    # '*', no filter for this field; 'value', match the value in the field
-    return: decorator
-    """
-    def wrapper(func):
-        @wraps(func)
-        def inner(*args, **kwargs):
-            attrs = inner(*args, **kwargs)
-            for x in (j for i,j in zip(f_args,attrs) if i != '*' and i != j):
-                return None
-            return attrs
-        return inner
-    return wrapper
-
-
 split2 = lambda x, y: (x[:y], x[y:])
 
 
@@ -51,14 +32,12 @@ def _decode_eth(header):
     input:  ethenet header (14 bytes array)
     return: (src_mac, dst_mac), next_protocol
     """
-    if len(header) != 14:
+    if len(header) != Ethernet.h_len:
         raise DecodeException('Ethernet header lenth error: (%d)' % len(header))
-
     eth_header = unpack('!6s6sH', header)
     next_proto = socket.ntohs(eth_header[2])
     mac_addr = lambda x: "%.2x" % x
     attributes = (':'.join(map(mac_addr,eth_header[0])), ':'.join(map(mac_addr,eth_header[1])))
-
     return attributes, next_proto
 
 
@@ -70,7 +49,6 @@ def decode_eth(header):
     input:  ethenet header (14 bytes array)
     return: src_mac, dst_mac
     """
-
     return _decode_eth(header)
 
 
@@ -81,19 +59,16 @@ def _decode_ip(header):
     input:  ethernet header + ip header
     return: (src_mac, dst_mac, src_ip, dst_ip), next_protocol
     """
-    ethenet_frame, ip_frame = split2(header, 14)# ethernet header - 14 bytes
+    ethenet_frame, ip_frame = split2(header, Ethernet.h_len)# ethernet header - 14 bytes
     attributes, protocol = _decode_eth(ethenet_frame)    # decode ethernet frame first
-
-    if protocol != headers.IP:
+    if protocol != Ip.protocol:
         raise DecodeException('Not IP packet, protocol number: (%d)' % protocol)
     if len(ip_frame) < 20:
         raise DecodeException('IP header length error: (%d)' % len(ip_frame))
-
-    ip_header = unpack('!BBHHHBBH4s4s', ip_frame[:20]) # currently only work on ipv4
+    ip_header = unpack('!BBHHHBBH4s4s', ip_frame[:Ip.h_len]) # currently only work on ipv4
     #version = ip_header[0] >> 4    # not IP version is not used at this point
     next_proto = ip_header[6]
     attributes = attributes + _decode_ip_addr(ip_header[-2:])
-
     return attributes, next_proto
 
 
@@ -105,7 +80,6 @@ def decode_ip(header):
     input:  ethernet header + ip header
     return: src_mac, dst_mac, src_ip, dst_ip
     """
-
     return _decode_ip(header)
 
 
@@ -117,7 +91,6 @@ def _decode_ip_addr(data):
     input:  bytes array for IP v4 header of src address and dst address (8 bytes)
     return: src_ip, dst_ip
     """
-
     return socket.inet_ntoa(data[0]), socket.inet_ntoa(data[1])
 
 
@@ -128,19 +101,16 @@ def decode_tcp(header):
     input:  bytes array of tcp header (20 bytes)
     return: src_mac, dst_mac, src_ip, dst_ip, src_port, dst_port, flag
     """
-    ip_h_len = (header[14] & 0xf) * 4 # ip header first byte high 4 bits * 4 are the IP header length
-    ip_frame, tcp_frame = split2(header, 14 + ip_h_len)# ethernet header + ip header length
+    ip_h_len = (header[Ethernet.h_len] & 0xf) * 4 # ip header first byte high 4 bits * 4 are the IP header length
+    ip_frame, tcp_frame = split2(header, Ethernet.h_len + ip_h_len)# ethernet header + ip header length
     attributes, protocol = _decode_ip(ip_frame)    # decode ethernet frame first
-
-    if protocol != headers.TCP:
+    if protocol != Tcp.protocol:
         raise DecodeException('Not TCP packet, protocol number: (%d)' % protocol)
-    if len(tcp_frame) < 20:
+    if len(tcp_frame) < Tcp.h_len:
         raise DecodeException('TCP header length error: (%d)' % len(tcp_frame))
-
-    tcp_header = unpack('!HHLLBBHHH', tcp_frame[:20])
+    tcp_header = unpack('!HHLLBBHHH', tcp_frame[:Tcp.h_len])
     #next_proto = None   # no next protocol to relay on to decode
-    attributes = attributes + (tcp_header[0], tcp_header[1], tcp_header[5] & 0x3f)
-
+    attributes = attributes + (tcp_header[0], tcp_header[1], tcp_header[5])
     return attributes
 
 
@@ -151,17 +121,14 @@ def decode_udp(header):
     input:  bytes array of udp header (8 bytes)
     return: src_mac, dst_mac, src_ip, dst_ip, src_port, dst_port
     """
-    ip_h_len = (header[14] & 0xf) * 4 # ip header first byte high 4 bits * 4 are the IP header length
-    ip_frame, udp_frame = split2(header, 14 + ip_h_len)# ethernet header + ip header length
+    ip_h_len = (header[Ethernet.h_len] & 0xf) * 4 # ip header first byte high 4 bits * 4 are the IP header length
+    ip_frame, udp_frame = split2(header, Ethernet.h_len + ip_h_len)# ethernet header + ip header length
     attributes, protocol = _decode_ip(ip_frame)    # decode ethernet frame first
-
-    if protocol != headers.UDP:
+    if protocol != Udp.protocol:
         raise DecodeException('Not UDP packet, protocol number: (%d)' % protocol)
-    if len(udp_frame) < 8:
+    if len(udp_frame) < Udp.h_len:
         raise DecodeException('UDP header length error: (%d)' % len(udp_frame))
-
-    udp_header = unpack('!HHHH', udp_frame[:8])
+    udp_header = unpack('!HHHH', udp_frame[:Udp.h_len])
     #next_proto = None  # no next protocol to relay on to decode
     attributes = attributes + (udp_header[0], udp_header[1])
-
     return attributes

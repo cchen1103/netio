@@ -1,4 +1,4 @@
-
+from ..decoders import decoder
 
 class AttrCounter:
     def __init__(self, func):
@@ -10,7 +10,6 @@ class AttrCounter:
             self.counter[attr] = self.counter[attr] + 1
         else:
             self.counter[attr] = 1
-        return attr
     def clr_count(self, *attrs):
         if not attrs:
             self.counter = dict()   # clear all counters
