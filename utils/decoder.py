@@ -137,7 +137,7 @@ def decode_tcp(header):
     if len(tcp_frame) < 20:
         raise DecodeException('TCP header length error: (%d)' % len(tcp_frame))
 
-    tcp_header = unpack('!HHLLBBHHH', tcp_frame)
+    tcp_header = unpack('!HHLLBBHHH', tcp_frame[:20])
     #next_proto = None   # no next protocol to relay on to decode
     attributes = attributes + (tcp_header[0], tcp_header[1], tcp_header[5] & 0x3f)
 
@@ -160,7 +160,7 @@ def decode_udp(header):
     if len(udp_frame) < 8:
         raise DecodeException('UDP header length error: (%d)' % len(udp_frame))
 
-    udp_header = unpack('!HHHH', udp_frame)
+    udp_header = unpack('!HHHH', udp_frame[:8])
     #next_proto = None  # no next protocol to relay on to decode
     attributes = attributes + (udp_header[0], udp_header[1])
 
