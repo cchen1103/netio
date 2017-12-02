@@ -1,4 +1,4 @@
-from .netio import main
+from netio import main
 
 """
 run as python module
