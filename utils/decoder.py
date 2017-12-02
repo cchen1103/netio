@@ -157,7 +157,7 @@ def decode_udp(header):
 
     if protocol != headers.UDP:
         raise DecodeException('Not UDP packet, protocol number: (%d)' % protocol)
-    if len(tcp_frame) < 8:
+    if len(udp_frame) < 8:
         raise DecodeException('UDP header length error: (%d)' % len(udp_frame))
 
     udp_header = unpack('!HHHH', udp_frame)
