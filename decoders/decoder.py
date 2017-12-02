@@ -32,9 +32,9 @@ def _decode_eth(header):
     input:  ethenet header (14 bytes array)
     return: (src_mac, dst_mac), next_protocol
     """
-    if len(header) != Ethernet.h_len:
+    if len(header) < Ethernet.h_len:
         raise DecodeException('Ethernet header lenth error: (%d)' % len(header))
-    eth_header = unpack('!6s6sH', header)
+    eth_header = unpack('!6s6sH', header[:Ethernet.h_len])
     next_proto = socket.ntohs(eth_header[2])
     mac_addr = lambda x: "%.2x" % x
     attributes = (':'.join(map(mac_addr,eth_header[0])), ':'.join(map(mac_addr,eth_header[1])))
