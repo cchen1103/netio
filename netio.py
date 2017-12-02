@@ -21,7 +21,7 @@ class sniff_sock:
         """
         destroy the socket and free all resources
         """
-        if self.s != None:
+        if self.s is not None:
             self.s.close()
 
 
