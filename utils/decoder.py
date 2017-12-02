@@ -32,7 +32,7 @@ def filter_attr(*f_args):
         @wraps(func)
         def inner(*args, **kwargs):
             attrs = inner(*args, **kwargs)
-            for x in (i, j in zip(f_args,attrs) if i != '*' and i != j):
+            for x in (j for i,j in zip(f_args,attrs) if i != '*' and i != j):
                 return None
             return attrs
         return inner
