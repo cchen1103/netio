@@ -25,26 +25,14 @@ class sniff_sock:
             self.s.close()
 
 
-from .decoders import decoder
+from .counters import counter
 
 
 def main():
     with sniff_sock() as s:
         while True:
             data, addr = s.recvfrom(65535)  # receive all datas from socket
-            try:
-                decoder.decode_eth(data)
-            except decoder.DecodeException:
-                pass
-            try:
-                decoder.decode_ip(data)
-            except decoder.DecodeException:
-                pass
-            try:
-                decoder.decode_tcp(data)
-            except decoder.DecodeException:
-                pass
-            try:
-                decoder.decode_udp(data)
-            except decoder.DecodeException:
-                pass
+            counter.ethernet_counter(data)
+            counter.ip_counter(data)
+            counter.tcp_counter(data)
+            counter.udp_counter(data)

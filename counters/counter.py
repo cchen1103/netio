@@ -2,11 +2,11 @@ from functools import wraps
 
 
 # x1=src_mac, x2=dst_mac
-_sorted_mac = lambda (x1,x2): (x2,x1) if x1 > x2 else (x1,x2)
+_sorted_mac = lambda x1,x2: (x2,x1) if x1 > x2 else (x1,x2)
 # x1=src_mac, x2=dst_mac, y1=src_ip, y2=dst_ip
-_sorted_ip = lambda (x1,x2,y1,y2): (x2,y2,x1,y1) if x1 > x2 else (x1,x2,y1,y2)
+_sorted_ip = lambda x1,x2,y1,y2: (x2,y2,x1,y1) if x1 > x2 else (x1,x2,y1,y2)
 # x1=src_mac, x2=dst_mac, y1=src_ip, y2=dst_ip, z1=src_port, z2=dst_port
-_sorted_tcp_udp = lambda (x1,x2,y1,y2,z1,z2): (x2,y2,z2,x1,y1,z1) if x1 > x2 else (x1,x2,y1,y2,z1,z2)
+_sorted_tcp_udp = lambda x1,x2,y1,y2,z1,z2: (x2,y2,z2,x1,y1,z1) if x1 > x2 else (x1,x2,y1,y2,z1,z2)
 
 
 class AttrCounter:
@@ -44,7 +44,7 @@ def ethernet_counter(data):
     counter is sorted by mac address.
     """
     try:
-        attr = _sorted_mac(decoder.decode_eth(data))
+        attr = _sorted_mac(*decoder.decode_eth(data))
     except decoder.DecodeException:
         attr = None
     return attr
@@ -58,7 +58,7 @@ def ip_counter(data):
     counter is sorted by mac/ip address.
     """
     try:
-        attr = _sorted_ip(decoder.decode_ip(data))
+        attr = _sorted_ip(*decoder.decode_ip(data))
     except decoder.DecodeException:
         attr = None
     return attr
@@ -67,7 +67,7 @@ def ip_counter(data):
 @AttrCounter
 def tcp_counter(data):
     try:
-        attr = _sorted_tcp_udp(decoder.decode_tcp(data)[:6])
+        attr = _sorted_tcp_udp(*(decoder.decode_tcp(data)[:6]))
     except decoder.DecodeException:
         attr = None
     return attr
@@ -76,7 +76,7 @@ def tcp_counter(data):
 @AttrCounter
 def udp_counter(data):
     try:
-        attr = _sorted_tcp_udp(decoder.decode_udp(data))
+        attr = _sorted_tcp_udp(*decoder.decode_udp(data))
     except decoder.DecodeException:
         attr = None
     return attr
