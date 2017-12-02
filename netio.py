@@ -32,7 +32,19 @@ def main():
     with sniff_sock() as s:
         while True:
             data, addr = s.recvfrom(65535)  # receive all datas from socket
-            decoder.decode_eth(data)
-            decoder.decode_ip(data)
-            decoder.decode_tcp(data)
-            decoder.decode_udp(data)
+            try:
+                decoder.decode_eth(data)
+            except decoder.DecodeException:
+                pass
+            try:
+                decoder.decode_ip(data)
+            except decoder.DecodeException:
+                pass
+            try:
+                decoder.decode_tcp(data)
+            except decoder.DecodeException:
+                pass
+            try:
+                decoder.decode_udp(data)
+            except decoder.DecodeException:
+                pass
