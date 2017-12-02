@@ -28,7 +28,7 @@ class sniff_sock:
 from .decoders import decoder
 
 
-def main:
+def main():
     with sniff_sock() as s:
         while True:
             data, addr = s.recvfrom(65535)  # receive all datas from socket
