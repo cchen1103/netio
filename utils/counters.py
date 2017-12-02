@@ -16,12 +16,10 @@ class AttrCounter:
             self.counter = dict()   # clear all counters
         else:
             for attr in (x for x in attrs if x in self.counter):
-                del self.counter(attr)  # remove listed attributes counter
+                del self.counter[attr]  # remove listed attributes counter
     @property
     def attrs(self):
         return self.counter.keys()
     @property
     def count(self):
         return self.counter
-
-        
