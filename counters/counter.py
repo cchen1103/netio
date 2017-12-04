@@ -93,7 +93,7 @@ def _filter_decode_output(func):
         if args:
             try:
                 return func(*args, **kwargs)
-            except: decoder.DecodeException:
+            except: decoder.DecodeException
                 return None
         return None
 
