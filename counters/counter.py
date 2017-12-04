@@ -62,14 +62,14 @@ class TimedAttrCounter(AttrCounter):
         """
         self._interval = 300
         self.bucket = int(time.time()/self.interval)
-        self.timed_counter = dict()
+        self._timed_counter = dict()
         AttrCounter.__init__(self, func)
     def __call__(self, *args, **kwargs):
         new_bucket = int(time.time()/self.interval)
         if self.bucket != new_bucket:
             # snap the time bucket counts from super class
             # reset super class counters
-            self.timed_counter[self.bucket] = self.counters
+            self._timed_counter[self.bucket] = self.counters
             self.clr_count()
             self.bucket = new_bucket
     @property
@@ -80,7 +80,7 @@ class TimedAttrCounter(AttrCounter):
         self._interval = val
     @property
     def timed_counter(self):
-        return self.timed_counter
+        return self._timed_counter
 
 
 from ..decoders import decoder
