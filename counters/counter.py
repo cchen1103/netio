@@ -80,7 +80,7 @@ class TimedAttrCounter(AttrCounter):
     def interval(self, val):
         self._interval = val
     @property
-    def counters(self):
+    def timed_counters(self):
         return self._timed_counter
 
 
@@ -93,7 +93,7 @@ def _filter_decode_output(func):
         if args or kwargs:
             try:
                 return func(*args, **kwargs)
-            except decoder.DecodeException:
+            except decoder.DecodeException: #reutne None on decoder error
                 return None
     return inner
 

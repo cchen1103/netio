@@ -30,10 +30,6 @@ from .counters import counter
 
 def main():
     with sniff_sock() as s:
-#        counter.ethernet_timed_counter()
-#        counter.ip_timed_counter()
-#        counter.tcp_timed_counter()
-#        counter.udp_timed_counter()
         counter.ethernet_timed_counter.interval = 10
         counter.ip_timed_counter.interval = 10
         counter.tcp_timed_counter.interval = 10
@@ -44,7 +40,7 @@ def main():
             counter.ip_timed_counter(data)
             counter.tcp_timed_counter(data)
             counter.udp_timed_counter(data)
-    print(counter.ethernet_timed_counter.counters)
-    print(counter.ip_timed_counter.counters)
-    print(counter.tcp_timed_counter.counters)
-    print(counter.udp_timed_counter.counters)
+    print(counter.ethernet_timed_counter.timed_counters)
+    print(counter.ip_timed_counter.timed_counters)
+    print(counter.tcp_timed_counter.timed_counters)
+    print(counter.udp_timed_counter.timed_counters)
