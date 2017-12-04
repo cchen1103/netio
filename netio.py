@@ -32,7 +32,7 @@ def main():
     with sniff_sock() as s:
         while True:
             data, addr = s.recvfrom(65535)  # receive all datas from socket
-            counter.ethernet_counter(data)
-            counter.ip_counter(data)
-            counter.tcp_counter(data)
-            counter.udp_counter(data)
+            counter.ethernet_timed_counter(data)
+            counter.ip_timed_counter(data)
+            counter.tcp_timed_counter(data)
+            counter.udp_timed_counter(data)

@@ -98,6 +98,15 @@ def ethernet_counter(data):
     return attr
 
 
+@TimedAttrCounter
+def ethernet_timed_counter(data):
+    try:
+        attr = _sorted_mac(*decoder.decode_eth(data))
+    except decoder.DecodeException:
+        attr = None
+    return attr
+
+
 @AttrCounter
 def ip_counter(data):
     """
@@ -105,6 +114,15 @@ def ip_counter(data):
     it does not matter of the directotion of the packets.
     counter is sorted by mac/ip address.
     """
+    try:
+        attr = _sorted_ip(*decoder.decode_ip(data))
+    except decoder.DecodeException:
+        attr = None
+    return attr
+
+
+@TimedAttrCounter
+def ip_timed_counter(data):
     try:
         attr = _sorted_ip(*decoder.decode_ip(data))
     except decoder.DecodeException:
@@ -121,8 +139,26 @@ def tcp_counter(data):
     return attr
 
 
+@TimedAttrCounter
+def tcp_timed_counter(data):
+    try:
+        attr = _sorted_tcp_udp(*(decoder.decode_tcp(data)[:6]))
+    except decoder.DecodeException:
+        attr = None
+    return attr
+
+
 @AttrCounter
 def udp_counter(data):
+    try:
+        attr = _sorted_tcp_udp(*decoder.decode_udp(data))
+    except decoder.DecodeException:
+        attr = None
+    return attr
+
+
+@TimedAttrCounter
+def udp_timed_counter(data):
     try:
         attr = _sorted_tcp_udp(*decoder.decode_udp(data))
     except decoder.DecodeException:
