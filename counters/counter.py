@@ -69,8 +69,8 @@ class TimedAttrCounter(AttrCounter):
         if self.bucket != new_bucket:
             # snap the time bucket counts from super class
             # reset super class counters
-            self.counter[self.bucket] = super.counters
-            super.clr_count()
+            self.timed_counter[self.bucket] = self.counters
+            self.clr_count()
             self.bucket = new_bucket
     @property
     def interval(self):
@@ -80,87 +80,100 @@ class TimedAttrCounter(AttrCounter):
         self._interval = val
 
 
-
 from ..decoders import decoder
 
 
-@AttrCounter
-def ethernet_counter(data):
+def _attr_ethernet(data):
     """
     count on the mac address pairs.
     it does not diffrenciate the src mac and dst mac.
     counter is sorted by mac address.
     """
-    try:
-        attr = _sorted_mac(*decoder.decode_eth(data))
-    except decoder.DecodeException:
-        attr = None
-    return attr
+    if data:
+        try:
+            attr = _sorted_mac(*decoder.decode_eth(data))
+        except decoder.DecodeException:
+            attr = None
+        return attr
+
+
+def _attr_ip(data):
+    """
+    count on the mac/ip address pairs.
+    it does not diffrenciate the src address and dst address.
+    counter is sorted by mac/ip address.
+    """
+    if data:
+        try:
+            attr = _sorted_ip(*decoder.decode_ip(data))
+        except decoder.DecodeException:
+            attr = None
+        return attr
+
+
+def _attr_tcp(data):
+    """
+    count on the mac/ip/port address pairs.
+    it does not diffrenciate the src address and dst address.
+    counter is sorted by mac/ip/port address.
+    """
+    if data:
+        try:
+            attr = _sorted_tcp_udp(*(decoder.decode_tcp(data)[:6]))
+        except decoder.DecodeException:
+            attr = None
+        return attr
+
+
+def _attr_udp(data):
+    """
+    count on the mac/ip/port address pairs.
+    it does not diffrenciate the src address and dst address.
+    counter is sorted by mac/ip/port address.
+    """
+    if data:
+        try:
+            attr = _sorted_tcp_udp(*decoder.decode_udp(data))
+        except decoder.DecodeException:
+            attr = None
+        return attr
+
+
+@AttrCounter
+def ethernet_counter(data):
+    return _attr_ethernet(data)
 
 
 @TimedAttrCounter
 def ethernet_timed_counter(data):
-    try:
-        attr = _sorted_mac(*decoder.decode_eth(data))
-    except decoder.DecodeException:
-        attr = None
-    return attr
+    return _attr_ethernet(data)
 
 
 @AttrCounter
 def ip_counter(data):
-    """
-    count on the mac/ip address pairs.
-    it does not matter of the directotion of the packets.
-    counter is sorted by mac/ip address.
-    """
-    try:
-        attr = _sorted_ip(*decoder.decode_ip(data))
-    except decoder.DecodeException:
-        attr = None
-    return attr
+    return _attr_ip(data)
 
 
 @TimedAttrCounter
 def ip_timed_counter(data):
-    try:
-        attr = _sorted_ip(*decoder.decode_ip(data))
-    except decoder.DecodeException:
-        attr = None
-    return attr
+    return _attr_ip(data)
 
 
 @AttrCounter
 def tcp_counter(data):
-    try:
-        attr = _sorted_tcp_udp(*(decoder.decode_tcp(data)[:6]))
-    except decoder.DecodeException:
-        attr = None
-    return attr
+    return _attr_tcp(data)
 
 
 @TimedAttrCounter
 def tcp_timed_counter(data):
-    try:
-        attr = _sorted_tcp_udp(*(decoder.decode_tcp(data)[:6]))
-    except decoder.DecodeException:
-        attr = None
-    return attr
+    return _attr_tcp(data)
 
 
 @AttrCounter
 def udp_counter(data):
-    try:
-        attr = _sorted_tcp_udp(*decoder.decode_udp(data))
-    except decoder.DecodeException:
-        attr = None
-    return attr
+    return _attr_udp(data)
 
 
 @TimedAttrCounter
 def udp_timed_counter(data):
-    try:
-        attr = _sorted_tcp_udp(*decoder.decode_udp(data))
-    except decoder.DecodeException:
-        attr = None
-    return attr
+    return _attr_udp(data)

@@ -30,6 +30,14 @@ from .counters import counter
 
 def main():
     with sniff_sock() as s:
+#        counter.ethernet_timed_counter()
+#        counter.ip_timed_counter()
+#        counter.tcp_timed_counter()
+#        counter.udp_timed_counter()
+        counter.ethernet_timed_counter.interval = 10
+        counter.ip_timed_counter.interval = 10
+        counter.tcp_timed_counter.interval = 10
+        counter.udp_timed_counter.interval = 10
         while True:
             data, addr = s.recvfrom(65535)  # receive all datas from socket
             counter.ethernet_timed_counter(data)
