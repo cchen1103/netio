@@ -95,7 +95,7 @@ def _filter_decode_output(func):
                 return func(*args, **kwargs)
             except decoder.DecodeException:
                 return None
-        return None
+        return inner
 
 
 @AttrCounter
