@@ -63,7 +63,7 @@ class TimedAttrCounter(AttrCounter):
         self._interval = 300
         self.bucket = int(time.time()/self.interval)
         self.timed_counter = dict()
-        self.func = func
+        AttrCounter.__init__(self, func)
     def __call__(self, *args, **kwargs):
         new_bucket = int(time.time()/self.interval)
         if self.bucket != new_bucket:
