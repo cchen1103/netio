@@ -80,104 +80,67 @@ class TimedAttrCounter(AttrCounter):
     def interval(self, val):
         self._interval = val
     @property
-    def timed_counter(self):
+    def counters(self):
         return self._timed_counter
 
 
 from ..decoders import decoder
 
 
-def _attr_ethernet(data):
-    """
-    count on the mac address pairs.
-    it does not diffrenciate the src mac and dst mac.
-    counter is sorted by mac address.
-    """
-    if data:
-        try:
-            attr = _sorted_mac(*decoder.decode_eth(data))
-        except decoder.DecodeException:
-            attr = None
-        return attr
-
-
-def _attr_ip(data):
-    """
-    count on the mac/ip address pairs.
-    it does not diffrenciate the src address and dst address.
-    counter is sorted by mac/ip address.
-    """
-    if data:
-        try:
-            attr = _sorted_ip(*decoder.decode_ip(data))
-        except decoder.DecodeException:
-            attr = None
-        return attr
-
-
-def _attr_tcp(data):
-    """
-    count on the mac/ip/port address pairs.
-    it does not diffrenciate the src address and dst address.
-    counter is sorted by mac/ip/port address.
-    """
-    if data:
-        try:
-            attr = _sorted_tcp_udp(*(decoder.decode_tcp(data)[:6]))
-        except decoder.DecodeException:
-            attr = None
-        return attr
-
-
-def _attr_udp(data):
-    """
-    count on the mac/ip/port address pairs.
-    it does not diffrenciate the src address and dst address.
-    counter is sorted by mac/ip/port address.
-    """
-    if data:
-        try:
-            attr = _sorted_tcp_udp(*decoder.decode_udp(data))
-        except decoder.DecodeException:
-            attr = None
-        return attr
+def _filter_decode_output(func):
+    @wraps(func)
+    def inner(*args, **kwargs):
+        if args:
+            try:
+                return func(*args, **kwargs)
+            except: decoder.DecodeException:
+                return None
+        return None
 
 
 @AttrCounter
+@_filter_decode_output
 def ethernet_counter(data):
-    return _attr_ethernet(data)
+    return _sorted_mac(*decoder.decode_eth(data))
 
 
 @TimedAttrCounter
+@_filter_decode_output
 def ethernet_timed_counter(data):
-    return _attr_ethernet(data)
+    return _sorted_mac(*decoder.decode_eth(data))
 
 
 @AttrCounter
+@_filter_decode_output
 def ip_counter(data):
-    return _attr_ip(data)
+    return _sorted_ip(*decoder.decode_ip(data))
 
 
 @TimedAttrCounter
+@_filter_decode_output
 def ip_timed_counter(data):
-    return _attr_ip(data)
+    return _sorted_ip(*decoder.decode_ip(data))
 
 
 @AttrCounter
+@_filter_decode_output
 def tcp_counter(data):
-    return _attr_tcp(data)
+    return _sorted_tcp_udp(*(decoder.decode_tcp(data)[:6]))
 
 
 @TimedAttrCounter
+@_filter_decode_output
 def tcp_timed_counter(data):
-    return _attr_tcp(data)
+    return _sorted_tcp_udp(*(decoder.decode_tcp(data)[:6]))
 
 
 @AttrCounter
+@_filter_decode_output
 def udp_counter(data):
-    return _attr_udp(data)
+    return _sorted_tcp_udp(*(decoder.decode_tcp(data)))
 
 
 @TimedAttrCounter
+@_filter_decode_output
 def udp_timed_counter(data):
-    return _attr_udp(data)
+    return _sorted_tcp_udp(*(decoder.decode_tcp(data)))
