@@ -65,7 +65,7 @@ class TimedAttrCounter(AttrCounter):
         self.counter = dict()
         self.func = func
     def __call__(self, *args, **kwargs):
-        new_bucket = int(time()/self.interval)
+        new_bucket = int(time.time()/self.interval)
         if self.bucket != new_bucket:
             # snap the time bucket counts from super class
             # reset super class counters
