@@ -69,7 +69,6 @@ class TimedAttrCounter(AttrCounter):
         if self.bucket != new_bucket:
             # snap the time bucket counts from super class
             # reset super class counters
-            print(self.counters)
             self._timed_counter[self.bucket] = self.counters
             self.clr_count()
             self.bucket = new_bucket
