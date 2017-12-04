@@ -73,7 +73,7 @@ class TimedAttrCounter(AttrCounter):
             self._timed_counter[self.bucket] = self.counters
             self.clr_count()
             self.bucket = new_bucket
-        super(AttrCounter, self).__call__(*args, **kwargs) #call the parent callable
+        super().__call__(*args, **kwargs) #call the parent callable
     @property
     def interval(self):
         return self._interval
