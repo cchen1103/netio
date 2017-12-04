@@ -38,9 +38,13 @@ def main():
         counter.ip_timed_counter.interval = 10
         counter.tcp_timed_counter.interval = 10
         counter.udp_timed_counter.interval = 10
-        while True:
+        for i in range(1000):
             data, addr = s.recvfrom(65535)  # receive all datas from socket
             counter.ethernet_timed_counter(data)
             counter.ip_timed_counter(data)
             counter.tcp_timed_counter(data)
             counter.udp_timed_counter(data)
+    print(counter.ethernet_timed_counter.timed_counter)
+    print(counter.ip_timed_counter.timed_counter)
+    print(counter.tcp_timed_counter.timed_counter)
+    print(counter.udp_timed_counter.timed_counter)

@@ -78,6 +78,9 @@ class TimedAttrCounter(AttrCounter):
     @interval.setter
     def interval(self, val):
         self._interval = val
+    @property
+    def timed_counter(self):
+        return self.timed_counter
 
 
 from ..decoders import decoder
