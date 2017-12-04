@@ -26,6 +26,7 @@ class sniff_sock:
 
 
 from .counters import counter
+from .extension import tcp
 
 
 def main():
@@ -40,7 +41,9 @@ def main():
             counter.ip_timed_counter(data)
             counter.tcp_timed_counter(data)
             counter.udp_timed_counter(data)
+            tcp.tcp_conn_counter(data)
     print(counter.ethernet_timed_counter.timed_counters)
     print(counter.ip_timed_counter.timed_counters)
     print(counter.tcp_timed_counter.timed_counters)
     print(counter.udp_timed_counter.timed_counters)
+    print(tcp.tcp_conn_counter.counters)
