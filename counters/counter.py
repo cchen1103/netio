@@ -61,7 +61,7 @@ class TimedAttrCounter(AttrCounter):
         default interval value is 300 seconds
         """
         self._interval = 300
-        self.bucket = int(time()/self.interval)
+        self.bucket = int(time.time()/self.interval)
         self.counter = dict()
         self.func = func
     def __call__(self, *args, **kwargs):
