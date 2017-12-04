@@ -137,10 +137,10 @@ def tcp_timed_counter(data):
 @AttrCounter
 @_filter_decode_output
 def udp_counter(data):
-    return _sorted_tcp_udp(*(decoder.decode_tcp(data)))
+    return _sorted_tcp_udp(*(decoder.decode_udp(data)))
 
 
 @TimedAttrCounter
 @_filter_decode_output
 def udp_timed_counter(data):
-    return _sorted_tcp_udp(*(decoder.decode_tcp(data)))
+    return _sorted_tcp_udp(*(decoder.decode_udp(data)))
