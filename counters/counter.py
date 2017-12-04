@@ -90,12 +90,12 @@ from ..decoders import decoder
 def _filter_decode_output(func):
     @wraps(func)
     def inner(*args, **kwargs):
-        if args:
+        if args or kwargs:
             try:
                 return func(*args, **kwargs)
             except decoder.DecodeException:
                 return None
-        return inner
+    return inner
 
 
 @AttrCounter
