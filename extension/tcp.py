@@ -34,7 +34,7 @@ def session(func):
                 if conn_track[conn] == 's':
                     conn_track[conn] = 'c'
                     return conn + ('c',)
-            del conn_track[conn]
+                del conn_track[conn]
             return attrs[:-1] + ('a',)
         if tcp_flag & Tcp.rst:    # rst
             del conn_track[conn]
