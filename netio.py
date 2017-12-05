@@ -49,4 +49,4 @@ def main():
     #print(counter.tcp_timed_counter.timed_counters)
     #print(counter.udp_timed_counter.timed_counters)
     print(tcp.tcp_conn_counter.counters)
-    print(tcp.tcp_timed_conn_counter.counters)
+    print(tcp.tcp_timed_conn_counter.timed_counters)
