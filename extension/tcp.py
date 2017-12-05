@@ -46,6 +46,7 @@ def session(func):
 
 
 from ..counters import counter
+from ..decoders import decoder
 
 
 @counter.AttrCounter
