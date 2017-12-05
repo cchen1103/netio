@@ -4,7 +4,7 @@ from ..decoders.__packet_headers__ import Tcp
 
 def _swap_addr(addr):
     src_ip,dst_ip,src_port,dst_port = addr
-    return (dst_ip,src_ip,dst_port,dst_ip)
+    return (dst_ip,src_ip,dst_port,src_port)
 
 
 def _mask_port(addr):
