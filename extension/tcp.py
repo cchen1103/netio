@@ -26,7 +26,7 @@ def session(func):
                     return conn + ('t',) # time out
                 else:
                     del conn_track[conn]
-                    return conn + ('a',) #  abnormal connection
+                    return conn + ('a1',) #  abnormal connection
             conn_track[conn] = 's'
             return conn + ('s',) # setup connection
         if tcp_flag & (Tcp.syn | Tcp.ack) == Tcp.syn | Tcp.ack: # syn and ack
@@ -35,7 +35,7 @@ def session(func):
                     conn_track[conn] = 'c'
                     return conn + ('c',)
                 del conn_track[conn]
-            return attrs[:-1] + ('a',)
+            return attrs[:-1] + ('a2',)
         if tcp_flag & Tcp.rst:    # rst
             del conn_track[conn]
             return attrs[:-1] + ('r',)
