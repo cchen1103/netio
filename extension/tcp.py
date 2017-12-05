@@ -45,10 +45,10 @@ def session(func):
             if st == 'r':
                 del conn_track[conn]
         if tcp_flag & Tcp.fin:  # fin
-            st = 'f' if conn in conn_track or _swap_addr(conn) in conn_track else None
-            if conn in conn_track:
+            st == 'f' if conn in conn_track or _swap_addr(conn) in conn_track else None
+            if st = 'f' and conn in conn_track:
                 del conn_track[conn]
-            else:
+            elif st == 'f':
                 del conn_track[_swap_addr(conn)]
         return _mask_port(conn) + (st,) if st else None
     return inner
