@@ -3,6 +3,7 @@ from ..decoders.__packet_headers__ import Tcp
 
 
 def session(func):
+    conn_track = dict()
     @wraps(func)
     def inner(*args, **kwargs):
         """
