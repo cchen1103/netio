@@ -68,5 +68,5 @@ def tcp_conn_counter(data):
 @counter.TimedAttrCounter
 @counter._filter_decode_output
 @session
-def tcp_conn_timed_counter(data):
+def tcp_timed_conn_counter(data):
     return decoder.decode_tcp(data)
