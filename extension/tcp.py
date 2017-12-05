@@ -20,7 +20,7 @@ def session(func):
         conn, tcp_flag = attrs[:-1], attrs[-1]
         if tcp_flag & (Tcp.syn | Tcp.ack) == Tcp.syn:  # syn only
             if conn in  conn_track:
-                if conn_track[conn] == 's'
+                if conn_track[conn] == 's':
                     del conn_track[conn]
                     return conn + ('t') # time out
                 else:
