@@ -94,7 +94,7 @@ def _filter_decode_output(func):
             try:
                 return func(*args, **kwargs)
             except decoder.DecodeException: #reutne None on decoder error
-                return None
+                pass
     return inner
 
 
