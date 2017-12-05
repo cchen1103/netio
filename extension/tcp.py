@@ -23,26 +23,26 @@ def session(func):
             if conn in  conn_track:
                 if conn_track[conn] == 's':
                     del conn_track[conn]
-                    return conn + ('t') # time out
+                    return conn + ('t',) # time out
                 else:
                     del conn_track[conn]
-                    return conn + ('a') #  abnormal connection
+                    return conn + ('a',) #  abnormal connection
             conn_track[conn] = 's'
-            return conn + ('s') # setup connection
+            return conn + ('s',) # setup connection
         if tcp_flag & (Tcp.syn | Tcp.ack) == Tcp.syn | Tcp.ack: # syn and ack
             if conn in conn_track:
                 if conn_track[conn] == 's':
                     conn_track[conn] = 'c'
-                    return conn + ('c')
+                    return conn + ('c',)
             del conn_track[conn]
-            return attrs[:-1] + ('a')
+            return attrs[:-1] + ('a',)
         if tcp_flag & Tcp.rst:    # rst
             del conn_track[conn]
-            return attrs[:-1] + ('r')
+            return attrs[:-1] + ('r',)
         if tcp_flag & Tcp.fin:  # fin
             if conn in conn_track:
                 del conn_track[conn]
-                return attrs[:-1] + ('f')
+                return attrs[:-1] + ('f',)
     return inner
 
 
