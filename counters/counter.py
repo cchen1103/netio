@@ -7,7 +7,7 @@ class NetCounter(Counter):
     Counter does not treat src/dst directions, it only counts two end points.
     """
     def __init__(self):
-        super().__init__()
+#        super().__init__()
     def update(self, src, dst):
         """
         the input is the one of
@@ -33,7 +33,7 @@ class TimedNetCounter(Counter):
         default interval value is 300 seconds
         """
         self._interval = 300
-        super().__init__()
+#        super().__init__()
     def update(self, src, dst):
         bucket = period(self._interval)
         super(Counter, self).update([(bucket,) + tuple(sorted([src, dst]))])
@@ -101,7 +101,7 @@ def _tcp_state(src, dst, flag):
 class TcpCounter(Counter):
     def __init__(self):
         self._track = dict()
-        super().__init__()
+#        super().__init__()
     def update(self, src, dst, flag):
         super(Counter, self).update([_tcp_state(src, dst, flag)])
 
@@ -113,7 +113,7 @@ class TimedTcpCounter(TcpCounter):
         default interval value is 300 seconds
         """
         self._interval = 300
-        super().__init__()
+#        super().__init__()
     def update(self, src, dst, flag):
         bucket = period(self._interval)
         super(TcpCounter, self).update(self, [(bucket,) + _tcp_state(src, dst, flag)])
