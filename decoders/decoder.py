@@ -51,7 +51,7 @@ def decode_ip(header):
     return: src_ip, dst_ip, next_protocol
     """
     ethenet_frame, ip_frame = split2(header, Ethernet.h_len)# ethernet header - 14 bytes
-    eth, proto = decode_eth(ethenet_frame)    # decode ethernet frame first
+    src, dst, proto = decode_eth(ethenet_frame)    # decode ethernet frame first
     if proto != Ip.proto:
         raise DecodeException('Not IP packet, protocol number: (%d)' % proto)
     if len(ip_frame) < 20:
