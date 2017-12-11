@@ -8,7 +8,6 @@ class NetCounter(Counter):
     """
     def __init__(self):
         pass
-#        super().__init__()
     def update(self, src, dst):
         """
         the input is the one of
@@ -18,7 +17,7 @@ class NetCounter(Counter):
         In the counter, we count the packages between two end points,
         regardless of the src or dst.
         """
-        super(Counter, self).update([tuple(sorted([src, dst]))])
+        super().update([tuple(sorted([src, dst]))])
 
 
 import time
@@ -34,10 +33,9 @@ class TimedNetCounter(Counter):
         default interval value is 300 seconds
         """
         self._interval = 300
-#        super().__init__()
     def update(self, src, dst):
         bucket = period(self._interval)
-        super(Counter, self).update([(bucket,) + tuple(sorted([src, dst]))])
+        super().update([(bucket,) + tuple(sorted([src, dst]))])
     @property
     def interval(self):
         return self._interval
@@ -98,13 +96,11 @@ def _tcp_state(src, dst, flag):
         return 'a', dst  # abnormal termination
 
 
-
 class TcpCounter(Counter):
     def __init__(self):
         self._track = dict()
-#        super().__init__()
     def update(self, src, dst, flag):
-        super(Counter, self).update([_tcp_state(src, dst, flag)])
+        super().update([_tcp_state(src, dst, flag)])
 
 
 class TimedTcpCounter(TcpCounter):
@@ -114,10 +110,9 @@ class TimedTcpCounter(TcpCounter):
         default interval value is 300 seconds
         """
         self._interval = 300
-#        super().__init__()
     def update(self, src, dst, flag):
         bucket = period(self._interval)
-        super(Counter, self).update([(bucket,) + _tcp_state(src, dst, flag)])
+        super().update([(bucket,) + _tcp_state(src, dst, flag)])
 
 
 class TcpTimer:

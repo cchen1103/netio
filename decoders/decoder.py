@@ -79,8 +79,8 @@ def decode_tcp(header):
         raise DecodeException('TCP header length error: (%d)' % len(tcp_frame))
     tcp_header = unpack('!HHLLBBHHH', tcp_frame[:Tcp.h_len])
     next_proto = None   # no next protocol to relay on to decode
-    src_port = ':'.join([ip_src, tcp_header[0]])
-    dst_port = ':'.join([ip_dst, tcp_header[1]])
+    src_port = ':'.join([ip_src, str(tcp_header[0])])
+    dst_port = ':'.join([ip_dst, str(tcp_header[1])])
     flag = tcp_header[5]
     return src_port, dst_port, flag, next_proto
 
@@ -101,6 +101,6 @@ def decode_udp(header):
         raise DecodeException('UDP header length error: (%d)' % len(udp_frame))
     udp_header = unpack('!HHHH', udp_frame[:Udp.h_len])
     next_proto = None  # no next protocol to relay on to decode
-    src_port = ':'.join([src_ip, udp_header[0]])
-    dst_port = ':'.join([dst_ip, udp_header[1]])
+    src_port = ':'.join([src_ip, str(udp_header[0])])
+    dst_port = ':'.join([dst_ip, str(udp_header[1])])
     return src_port, dst_port, next_proto
