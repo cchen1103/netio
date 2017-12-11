@@ -59,7 +59,7 @@ def decode_ip(header):
     ip_header = unpack('!BBHHHBBH4s4s', ip_frame[:Ip.h_len]) # currently only work on ipv4
     #version = ip_header[0] >> 4    # not IP version is not used at this point
     next_proto = ip_header[6]
-    src_ip, dst_ip = decode_ip_addr(ip_header[-2:])
+    src_ip, dst_ip = _decode_ip_addr(ip_header[-2:])
     return src_ip, dst_ip, next_proto
 
 
