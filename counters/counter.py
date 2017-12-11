@@ -117,10 +117,10 @@ class TimedTcpCounter(TcpCounter):
 #        super().__init__()
     def update(self, src, dst, flag):
         bucket = period(self._interval)
-        super(TcpCounter, self).update(self, [(bucket,) + _tcp_state(src, dst, flag)])
+        super(Counter, self).update([(bucket,) + _tcp_state(src, dst, flag)])
 
 
-class TcpTimer():
+class TcpTimer:
     def __init__(self):
         self.track_t = dict()
         self.session_t = dict()
