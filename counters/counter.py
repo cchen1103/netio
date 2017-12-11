@@ -61,7 +61,7 @@ def _tcp_state(src, dst, flag):
     except:
         _tcp_state.track = dict()
     if flag & (Tcp.syn | Tcp.ack) is Tcp.syn:
-        if (src, dst) in _tcp_state.track and _tcp_state.track[(src, dst)] is 's'':
+        if (src, dst) in _tcp_state.track and _tcp_state.track[(src, dst)] is 's':
             return 't', dst    # timed out on connection
         elif (src, dst) not in _tcp_state.track:
             _tcp_state.track[(src, dst)] = 's'   # new tcp setup request
