@@ -61,40 +61,40 @@ def _tcp_state(src, dst, flag):
     """
     if flag & (Tcp.syn | Tcp.ack) is Tcp.syn:
         if (src, dst) in _tcp_state.track and _tcp_state.track[(src, dst)] is Tcp.syn:
-                return 't', dst    # timed out on connection
-            elif (src, dst) not in _tcp_state.track:
-                _tcp_state.track[(src, dst)] = 's'   # new tcp setup request
-                return 's', dst
-        elif flag & (Tcp.syn | Tcp.ack) is (Tcp.syn | Tcp.ack):
-            if (dst, src) in _tcp_state.track and _tcp_state.track[(dst, src)] is 's':
-                _tcp_state.track[(dst, src)] = 'c'   # established tcp connection
-                return 'c', src
-        elif flag & Tcp.ack and not (flag & (Tcp.fin | Tcp.syn)):
-            if (dst, src) in _tcp_state.track:
-                return 'n', src # normal traffic
-            elif (src, dst) in _tcp_state.track:
-                return 'n', dst # normal traffic
-        elif flag & Tcp.rst:
-            if (dst, src) in _tcp_state.track:
-                del(_tcp_state.track[(dst, src)])    # server reject tcp connection
-                return 'r', src
-        elif flag is 'f':
-            if (src, dst) in _tcp_state.track:
-                if _tcp_state.track[(src,dst)] is 'c':
-                    del(_tcp_state.track[(src, dst)])  # connection termination
-                    return 'f', dst
-                else:
-                    del(_tcp_state.track[(src, dst)])  # remove abnomal fin related connection
-                    return 'a', dst
-            elif (dst, src) in _tcp_state.track:
-                if self._track[(dst, src)] is 'c':
-                    del(_tcp_state.track[(dst, src)])   # connection termination
-                    return 'f', src
-                else:
-                    del(_tcp_state.track[(dst, src)])  # remove abnomal fin related connection
-                    return 'a', src
-        else:
-            return 'a', dst  # abnormal termination
+            return 't', dst    # timed out on connection
+        elif (src, dst) not in _tcp_state.track:
+            _tcp_state.track[(src, dst)] = 's'   # new tcp setup request
+            return 's', dst
+    elif flag & (Tcp.syn | Tcp.ack) is (Tcp.syn | Tcp.ack):
+        if (dst, src) in _tcp_state.track and _tcp_state.track[(dst, src)] is 's':
+            _tcp_state.track[(dst, src)] = 'c'   # established tcp connection
+            return 'c', src
+    elif flag & Tcp.ack and not (flag & (Tcp.fin | Tcp.syn)):
+        if (dst, src) in _tcp_state.track:
+            return 'n', src # normal traffic
+        elif (src, dst) in _tcp_state.track:
+            return 'n', dst # normal traffic
+    elif flag & Tcp.rst:
+        if (dst, src) in _tcp_state.track:
+            del(_tcp_state.track[(dst, src)])    # server reject tcp connection
+            return 'r', src
+    elif flag & Tcp.fin:
+        if (src, dst) in _tcp_state.track:
+            if _tcp_state.track[(src,dst)] is 'c':
+                del(_tcp_state.track[(src, dst)])  # connection termination
+                return 'f', dst
+            else:
+                del(_tcp_state.track[(src, dst)])  # remove abnomal fin related connection
+                return 'a', dst
+        elif (dst, src) in _tcp_state.track:
+            if self._track[(dst, src)] is 'c':
+                del(_tcp_state.track[(dst, src)])   # connection termination
+                return 'f', src
+            else:
+                del(_tcp_state.track[(dst, src)])  # remove abnomal fin related connection
+                return 'a', src
+    else:
+        return 'a', dst  # abnormal termination
 
 
 
