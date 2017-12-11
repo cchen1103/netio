@@ -62,7 +62,7 @@ def _tcp_state(src, dst, flag):
     if flag & (Tcp.syn | Tcp.ack) is Tcp.syn:
         if (src, dst) in _tcp_state.track and _tcp_state.track[(src, dst)] is Tcp.syn:
                 return 't', dst    # timed out on connection
-            elif (src, dst) not in self._track:
+            elif (src, dst) not in _tcp_state.track:
                 _tcp_state.track[(src, dst)] = 's'   # new tcp setup request
                 return 's', dst
         elif flag & (Tcp.syn | Tcp.ack) is (Tcp.syn | Tcp.ack):
@@ -86,7 +86,7 @@ def _tcp_state(src, dst, flag):
                 else:
                     del(_tcp_state.track[(src, dst)])  # remove abnomal fin related connection
                     return 'a', dst
-            elif (dst, src) in self._track:
+            elif (dst, src) in _tcp_state.track:
                 if self._track[(dst, src)] is 'c':
                     del(_tcp_state.track[(dst, src)])   # connection termination
                     return 'f', src
