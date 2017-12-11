@@ -8,7 +8,7 @@ class NetCounter(Counter):
     """
     def __init__(self):
         super().__init__(self)
-    def update(self, *args):
+    def update(self, src, dst):
         """
         the input is the one of
         src_mac/dst_mac
@@ -17,7 +17,8 @@ class NetCounter(Counter):
         In the counter, we count the packages between two end points,
         regardless of the src or dst.
         """
-        super().update([tuple(sorted(args))])
+        print(src,dst)
+        super().update([tuple(sorted([src, dst]))])
 
 
 import time
