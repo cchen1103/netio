@@ -77,6 +77,7 @@ def _tcp_state(src, dst, flag):
             return 'n', src # normal traffic
         elif (src, dst) in _tcp_state.track:
             return 'n', dst # normal traffic
+        return 'n', min([src, dst])
     if flag & Tcp.rst:
         if (dst, src) in _tcp_state.track:
             del(_tcp_state.track[(dst, src)])    # server reject tcp connection
