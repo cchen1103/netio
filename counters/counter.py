@@ -103,7 +103,8 @@ class TcpCounter(Counter):
         self._track = dict()
         super().__init__(self)
     def update(self, args):
-        super().update([_tcp_state(*args)])
+        src, dst, flag = args
+        super().update([_tcp_state(src, dst, flag)])
 
 
 class TimedTcpCounter(TcpCounter):
