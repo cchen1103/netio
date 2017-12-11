@@ -90,7 +90,7 @@ def _tcp_state(src, dst, flag):
                 del(_tcp_state.track[(src, dst)])  # remove abnomal fin related connection
                 return 'a', dst
         elif (dst, src) in _tcp_state.track:
-            if self._track[(dst, src)] is 'c':
+            if _tcp_state.track._track[(dst, src)] is 'c':
                 del(_tcp_state.track[(dst, src)])   # connection termination
                 return 'f', src
             else:
