@@ -106,7 +106,7 @@ class TcpCounter(Counter):
         super().update([_tcp_state(src, dst, flag)])
 
 
-class TimedTcpCounter(TcpCounter):
+class TimedTcpCounter(Counter):
     def __init__(self, interval=300):
         """
         interval in seconds to form the timed buckets based on unix time.
