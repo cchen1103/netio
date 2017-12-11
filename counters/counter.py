@@ -96,8 +96,7 @@ def _tcp_state(src, dst, flag):
             else:
                 del(_tcp_state.track[(dst, src)])  # remove abnomal fin related connection
                 return 'a', src
-    else:
-        return 'a', dst  # abnormal termination
+    return 'a', dst  # abnormal termination
 
 
 class TcpCounter(Counter):
