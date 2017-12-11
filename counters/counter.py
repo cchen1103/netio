@@ -7,8 +7,8 @@ class NetCounter(Counter):
     Counter does not treat src/dst directions, it only counts two end points.
     """
     def __init__(self):
-        super().__init__(self)
-    def update(self, args):
+        super().__init__()
+    def update(self, src, dst):
         """
         the input is the one of
         src_mac/dst_mac
@@ -17,7 +17,7 @@ class NetCounter(Counter):
         In the counter, we count the packages between two end points,
         regardless of the src or dst.
         """
-        super().update(self, [tuple(sorted(args))])
+        super(Counter, self).update([tuple(sorted([src, dst]]))])
 
 
 import time
@@ -33,10 +33,10 @@ class TimedNetCounter(Counter):
         default interval value is 300 seconds
         """
         self._interval = 300
-        super().__init__(self)
-    def update(self, args):
+        super().__init__()
+    def update(self, src, dst):
         bucket = period(self._interval)
-        super().update(self, [(bucket,) + tuple(sorted(args))]) #call the parent callable
+        super(Counter, self).update([(bucket,) + tuple(sorted([src, dst]))])
     @property
     def interval(self):
         return self._interval
@@ -101,11 +101,9 @@ def _tcp_state(src, dst, flag):
 class TcpCounter(Counter):
     def __init__(self):
         self._track = dict()
-        super().__init__(self)
-    def update(self, args):
-        print(args)
-        src, dst, flag = args
-        super().update(self, [_tcp_state(src, dst, flag)])
+        super().__init__()
+    def update(self, src, dst, flag):
+        super(Counter, self).update([_tcp_state(src, dst, flag)])
 
 
 class TimedTcpCounter(TcpCounter):
@@ -115,19 +113,17 @@ class TimedTcpCounter(TcpCounter):
         default interval value is 300 seconds
         """
         self._interval = 300
-        super().__init__(self)
-    def update(self, args):
+        super().__init__()
+    def update(self, src, dst, flag):
         bucket = period(self._interval)
-        src, dst, flag = args
-        super().update(self, [(bucket,) + _tcp_state(src, dst, flag)])
+        super(TcpCounter, self).update(self, [(bucket,) + _tcp_state(src, dst, flag)])
 
 
 class TcpTimer():
     def __init__(self):
         self.track_t = dict()
         self.session_t = dict()
-    def update(self, args):
-        src, dst, flag = args
+    def update(self, src, dst, flag):
         st, svr = _tcp_state(src, dst, flag)
         if st is 'c':
             self.track_t[(src, dst)] = time.time()
