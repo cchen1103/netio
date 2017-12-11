@@ -17,7 +17,6 @@ class NetCounter(Counter):
         In the counter, we count the packages between two end points,
         regardless of the src or dst.
         """
-        print(args)
         super().update([tuple(sorted(args))])
 
 
@@ -35,9 +34,9 @@ class TimedNetCounter(Counter):
         """
         self._interval = 300
         super().__init__(self)
-    def update(self, *args):
+    def update(self, args):
         bucket = period(self._interval)
-        super().update([(bucket) + tuple(sorted(args))]) #call the parent callable
+        super().update([(bucket,) + tuple(sorted(args))]) #call the parent callable
     @property
     def interval(self):
         return self._interval
@@ -115,16 +114,18 @@ class TimedTcpCounter(TcpCounter):
         """
         self._interval = 300
         super().__init__(self)
-    def update(self, src, dst, flag):
+    def update(self, args):
         bucket = period(self._interval)
-        super().update([(bucket) + _tcp_state(src, dst, flag)])
+        src, dst, flag = args
+        super().update([(bucket,) + _tcp_state(src, dst, flag)])
 
 
 class TcpTimer():
     def __init__(self):
         self.track_t = dict()
         self.session_t = dict()
-    def update(self, src, dst, flag):
+    def update(self, args):
+        src, dst, flag = args
         st, svr = _tcp_state(src, dst, flag)
         if st is 'c':
             self.track_t[(src, dst)] = time.time()
