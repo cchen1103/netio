@@ -17,7 +17,7 @@ class NetCounter(Counter):
         In the counter, we count the packages between two end points,
         regardless of the src or dst.
         """
-        super(Counter, self).update([tuple(sorted([src, dst]]))])
+        super(Counter, self).update([tuple(sorted([src, dst]))])
 
 
 import time
