@@ -7,6 +7,7 @@ class NetCounter(Counter):
     Counter does not treat src/dst directions, it only counts two end points.
     """
     def __init__(self):
+        pass
 #        super().__init__()
     def update(self, src, dst):
         """
