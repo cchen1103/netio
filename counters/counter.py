@@ -6,8 +6,6 @@ class NetCounter(Counter):
     Counters for ethernet, ip and tcp/udp packets.
     Counter does not treat src/dst directions, it only counts two end points.
     """
-    def __init__(self):
-        pass
     def update(self, src, dst):
         """
         the input is the one of
