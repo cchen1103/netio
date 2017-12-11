@@ -53,8 +53,8 @@ def main():
                 pass
             try:
                 *tcp_out, proto = decoder.decode_tcp(data)
-                nc.update(*tcp_out)
-                tnc.update(*tcp_out)
+                nc.update(*tcp_out[:-1])
+                tnc.update(*tcp_out[:-1])
                 tc.update(*tcp_out)
                 ttc.update(*tcp_out)
             except decoder.DecodeException:
