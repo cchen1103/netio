@@ -26,27 +26,34 @@ class sniff_sock:
 
 
 from .counters import counter
-from .extension import tcp
+from .decoders import decoder
 
 
 def main():
+    nc = counter.NetCounter()
+    tnc = counter.TimedNetCounter()
+    tc = counter.TcpCounter()
+    ttc = counter.TimedTcpCounter(30)
+    st = counter.TcpTimer()
     with sniff_sock() as s:
-        counter.ethernet_timed_counter.interval = 10
-        counter.ip_timed_counter.interval = 10
-        counter.tcp_timed_counter.interval = 10
-        counter.udp_timed_counter.interval = 10
-        tcp.tcp_timed_conn_counter.interval = 30
+        tnc.interval = 10
         for i in range(1000):
             data, addr = s.recvfrom(65535)  # receive all datas from socket
-            counter.ethernet_timed_counter(data)
-            counter.ip_timed_counter(data)
-            counter.tcp_timed_counter(data)
-            counter.udp_timed_counter(data)
-            tcp.tcp_conn_counter(data)
-            tcp.tcp_timed_conn_counter(data)
+            nc.update(decoder_eth(data))
+            nc.update(decoder_ip(data))
+            nc.update(decoder_tcp(data))
+            nc.update(decoder_udp(data))
+            tnc.update(decoder_eth(data))
+            tnc.update(decoder_ip(data))
+            tnc.update(decoder_tcp(data))
+            tnc.update(decoder_udp(data))
+            tc.update(decoder_tcp(data))
+            ttc.update(decoder_tcp(data))
     #print(counter.ethernet_timed_counter.timed_counters)
     #print(counter.ip_timed_counter.timed_counters)
     #print(counter.tcp_timed_counter.timed_counters)
     #print(counter.udp_timed_counter.timed_counters)
-    print(tcp.tcp_conn_counter.counters)
-    print(tcp.tcp_timed_conn_counter.timed_counters)
+    print(nc)
+    print(tnc)
+    print(tc)
+    print(ttc)
