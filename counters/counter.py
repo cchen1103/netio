@@ -58,6 +58,10 @@ def _tcp_state(src, dst, flag):
     'a', dst - tcp abnormal flagged packets
     'n', dst - normal packets after tcp connection is established
     """
+    try:
+        _tcp_state.track
+    except:
+        _tcp_state.track = dict()
     if flag & (Tcp.syn | Tcp.ack) is Tcp.syn:
         if (src, dst) in _tcp_state.track and _tcp_state.track[(src, dst)] is Tcp.syn:
             return 't', dst    # timed out on connection
