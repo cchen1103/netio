@@ -71,5 +71,6 @@ def main():
     #print(counter.udp_timed_counter.timed_counters)
     print(nc)
     print(tnc)
-    print(tc)
+    for i in tc:
+        print(i, tc[i])
     print(ttc)

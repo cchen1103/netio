@@ -72,7 +72,7 @@ def _tcp_state(src, dst, flag):
         if (dst, src) in _tcp_state.track and _tcp_state.track[(dst, src)] is 's':
             _tcp_state.track[(dst, src)] = 'c'   # established tcp connection
             return 'c', src
-    if flag & Tcp.ack and not (flag & (Tcp.fin | Tcp.syn)):
+    if flag & Tcp.ack and not (flag & (Tcp.fin | Tcp.syn | Tcp.rst)):
         if (dst, src) in _tcp_state.track:
             return 'n', src # normal traffic
         elif (src, dst) in _tcp_state.track:
