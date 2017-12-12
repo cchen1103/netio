@@ -47,66 +47,11 @@ class TimedNetCounter(Counter):
 from ..decoders.__packet_headers__ import Tcp
 
 
-def _tcp_state(src, dst, flag):
-    """
-    't', dst - timeout on tcp connection to dst
-    's', dst - tcp syn to dst
-    'c', dst - tcp connection established
-    'f', dst - tcp connection terminated
-    'p', dst - tcp push packets
-    'u', dst - tcp urgent packets
-    'a', dst - tcp abnormal flagged packets
-    'n', dst - normal packets after tcp connection is established
-    """
-    try:
-        _tcp_state.track
-    except:
-        _tcp_state.track = dict()
-    if flag & (Tcp.syn | Tcp.ack) is Tcp.syn:
-        if (src, dst) in _tcp_state.track and _tcp_state.track[(src, dst)] is 's':
-            return 't', dst    # timed out on connection
-        elif (src, dst) not in _tcp_state.track:
-            _tcp_state.track[(src, dst)] = 's'   # new tcp setup request
-            return 's', dst
-    if flag & (Tcp.syn | Tcp.ack) is (Tcp.syn | Tcp.ack):
-        if (dst, src) in _tcp_state.track and _tcp_state.track[(dst, src)] is 's':
-            _tcp_state.track[(dst, src)] = 'c'   # established tcp connection
-            return 'c', src
-    if flag & Tcp.ack and not (flag & (Tcp.fin | Tcp.syn | Tcp.rst)):
-        if (dst, src) in _tcp_state.track:
-            return 'n', src # normal traffic
-        elif (src, dst) in _tcp_state.track:
-            return 'n', dst # normal traffic
-        return 'n', min([src, dst])
-    if flag & Tcp.rst:
-        if (dst, src) in _tcp_state.track:
-            del(_tcp_state.track[(dst, src)])    # server reject tcp connection
-            return 'r', src
-    if flag & Tcp.fin:
-        if (src, dst) in _tcp_state.track:
-            if _tcp_state.track[(src,dst)] is 'c':
-                del(_tcp_state.track[(src, dst)])  # connection termination
-                return 'f', dst
-            else:
-                del(_tcp_state.track[(src, dst)])  # remove abnomal fin related connection
-                return 'a', dst
-        if (dst, src) in _tcp_state.track:
-            if _tcp_state.track[(dst, src)] is 'c':
-                del(_tcp_state.track[(dst, src)])   # connection termination
-                return 'f', src
-            else:
-                del(_tcp_state.track[(dst, src)])  # remove abnomal fin related connection
-                return 'a', src
-        else:
-            return 'f', src
-    return 'a', dst  # abnormal termination
-
-
 class TcpCounter(Counter):
     def __init__(self):
         self._track = dict()
-    def update(self, src, dst, flag):
-        super().update([_tcp_state(src, dst, flag)])
+    def update(self, con, st):
+        super().update([(con, st)])
 
 
 class TimedTcpCounter(Counter):
@@ -116,19 +61,21 @@ class TimedTcpCounter(Counter):
         default interval value is 300 seconds
         """
         self._interval = 300
-    def update(self, src, dst, flag):
+    def update(self, con, st):
         bucket = period(self._interval)
-        super().update([(bucket,) + _tcp_state(src, dst, flag)])
+        super().update([(bucket,) + (con, st)])
 
 
 class TcpTimer:
     def __init__(self):
         self.track_t = dict()
         self.session_t = dict()
-    def update(self, src, dst, flag):
-        st, svr = _tcp_state(src, dst, flag)
+    def update(self, con, st):
         if st is 'c':
             self.track_t[(src, dst)] = time.time()
         elif st is 'f' and (src, dst) in self.track_t:
-            self.session_t[svr].append(time.time() - track_t[(src, dst)])
+            if svr in self.session_t:
+                self.session_t[svr].append(time.time() - self.track_t[(src, dst)])
+            else:
+                self.session_t[svr] = [time.time() - self.track_t[(src, dst)]]
             del(self.track_t[(src, dst)])
