@@ -57,6 +57,7 @@ def main():
                 tnc.update(*tcp_out[:-1])
                 tc.update(*tcp_out)
                 ttc.update(*tcp_out)
+                st.update(*tcp_out)
             except decoder.DecodeException:
                 pass
             try:
@@ -74,3 +75,4 @@ def main():
     for i in tc:
         print(i, tc[i])
     print(ttc)
+    print(st.session_t)
