@@ -43,6 +43,7 @@ class NetStats:
         self.udpstats = Counter()
         self.tcpstats = Counter()
         self.session_t = dict()
+        self._session_t1 = dict()
         self._tcp_track = dict()
     @property
     def ethernet_enabled(self):
