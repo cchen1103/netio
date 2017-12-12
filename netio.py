@@ -46,7 +46,7 @@ class NetStats:
         self._tcp_track = dict()
     @property
     def ethernet_enabled(self):
-        return self._eth_enabled
+        return self._ethernet_enabled
     @property
     def ip_enabled(self):
         return self._ip_enabled
