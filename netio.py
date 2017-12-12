@@ -28,6 +28,7 @@ class sniff_sock:
 from .decoders.__packet_headers__ import Tcp
 from .decoders.decoder import *
 from collections import Counter
+import time
 
 
 class NetStats:
