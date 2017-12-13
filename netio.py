@@ -155,7 +155,7 @@ class NetStats:
         src, dst = find_index(src, dst, self._tcp_track)
         if flag & (Tcp.syn | Tcp.ack) is Tcp.syn:   # syn flag
             if (src, dst) not in self._tcp_track:   # new syn state
-                self._tcp_track[(src, dst)] = ('s', time.time())    # update syn state and record the syn timestamp
+                self._tcp_track[(src, dst)] = ['s', time.time()]    # update syn state and record the syn timestamp
                 return dst, 's'
             elif self._tcp_track[(src, dst)] is 's':   # already have syn, this is re-send
                 return dst, 't'    # timed out on connection
