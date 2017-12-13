@@ -117,7 +117,7 @@ class NetStats:
         'u', dst - tcp urgent packets
         'a', dst - tcp abnormal flagged packets
         """
-        find_index = lambda x,y,z: (x,y) if (x,y) in z else (y,x)
+        find_index = lambda x,y,z: (y,x) if (y,x) in z else (x,y)
         src, dst = find_index(src, dst, self._tcp_track)
         if flag & (Tcp.syn | Tcp.ack) is Tcp.syn:
             if (src, dst) in self._tcp_track and self._tcp_track[(src, dst)] is 's':
