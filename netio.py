@@ -175,6 +175,7 @@ class NetStats:
             if (src, dst) in self._tcp_track:
                 t = time.time() - self._tcp_track[(src, dst)][1]
                 if dst in self.session_t:
+                    print(dst, self.session_t[dst])
                     self.session_t[dst] = self.session_t[dst].append(t)
                 else:
                     self.session_t[dst] = deque([t], self._max_session_sample)
