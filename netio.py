@@ -174,8 +174,10 @@ class NetStats:
         if flag & (Tcp.fin | Tcp.rst) is Tcp.fin:   # fin flag
             if (src, dst) in self._tcp_track:
                 t = time.time() - self._tcp_track[(src, dst)][1]
-                print(dst, self.session_t[dst])
-                self.session_t[dst] = self.session_t[dst].append(t) if dst in self.session_t else deque([t], self._max_session_sample)
+                if dst in self.session_t:
+                    self.session_t[dst] = self.session_t[dst].append(t)
+                else:
+                    self.session_t[dst] = deque([t], self._max_session_sample)
                 del(self._tcp_track[(src, dst)])  # connection termination
                 return dst, 'f'
             else:
