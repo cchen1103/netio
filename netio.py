@@ -33,11 +33,11 @@ import time
 
 class NetStats:
     def __init__(self):
-        self._interval = 0          # default no timestamp bucket
         self._ethernet_enabled = False
         self._ip_enabled = False
         self._tcp_enabled = False
         self._udp_enabled = False
+        self._max_session_sample = None   # number of tcp session time reacord stored
         self.netstats = Counter()
         self.ipstats = Counter()
         self.udpstats = Counter()
@@ -57,8 +57,8 @@ class NetStats:
     def udp_enabled(self):
         return self._udp_enabled
     @property
-    def interval(self):
-        return self._interval
+    def max_tcp_session_t(self):
+        return self._max_session_sample
     @ethernet_enabled.setter
     def ethernet_enabled(self, val):
         """
@@ -91,35 +91,34 @@ class NetStats:
         input: True/False. If true, udp frame stats will be collected
         """
         self._udp_enabled = val
-    @interval.setter
-    def interval(self, val):
+    @max_tcp_session_t.setter
+    def max_tcp_session_t(self, val):
         """
-        input: positive integer. If none zero, stats will be collected in the bucket of time intervals (in seconds)
+        set deque for holding number of tcp rr time
+
+        input: integer, number of sample would module to hold for tcp rr time. None for unbound
         """
-        if val < 0 or not isinstance(val, int):
-            raise ValueError("interval must be non-negative integer")
-        self._interval = val
+        self._max_session_sample = val
     def recv_packet(self, data):
         """
         received ethernet packet added into NetStats
         """
-        bucket = int(time.time()/self.interval)*self.interval if self.interval > 0 else 0   # calculate bucket
         if self.ethernet_enabled:   # ethernet counter
             try:
                 *eth_out, proto = decode_eth(data)
-                self.netstats.update([(bucket,) + tuple(sorted(eth_out))])
+                self.netstats.update([tuple(sorted(eth_out))])
             except DecodeException:
                 pass
         if self.ip_enabled: # ip counter
             try:
                 *ip_out, proto = decode_ip(data)
-                self.ipstats.update([(bucket,) + tuple(sorted(ip_out))])
+                self.ipstats.update([tuple(sorted(ip_out))])
             except DecodeException:
                 pass
         if self.udp_enabled:    # udp counter
             try:
                 *udp_out, proto = decode_udp(data)
-                self.udpstats.update([(bucket,) + tuple(sorted(udp_out))])
+                self.udpstats.update([tuple(sorted(udp_out))])
             except DecodeException:
                 pass
         if self.tcp_enabled:    # tcp stats
@@ -127,7 +126,7 @@ class NetStats:
                 *tcp_out, proto = decode_tcp(data)
                 dst, st = self._track_tcp_session(*tcp_out) # get tcp status on the destination connection
                 if dst is not None: # only add to counter if a valid status is returned
-                    self.tcpstats.update([(bucket,) + (dst, st)])
+                    self.tcpstats.update([(dst, st)])
             except DecodeException:
                 pass
     def _track_tcp_session(self, src, dst, flag):
@@ -174,8 +173,8 @@ class NetStats:
                 return dst, 'r'
         if flag & (Tcp.fin | Tcp.rst) is Tcp.fin:   # fin flag
             if (src, dst) in self._tcp_track:
-                t = [time.time() - self._tcp_track[(src, dst)][1]]
-                self.session_t[dst] = self.session_t[dst] + t if dst in self.session_t else t
+                t = time.time() - self._tcp_track[(src, dst)][1]
+                self.session_t[dst] = self.session_t[dst].append(t) if dst in self.session_t else deque([t], self._max_session_sample)
                 del(self._tcp_track[(src, dst)])  # connection termination
                 return dst, 'f'
             else:
@@ -186,9 +185,10 @@ class NetStats:
 def main():
     ns = NetStats()
     ns.tcp_enabled = True
-    ns.interval = 10
+    interval = 10
     with sniff_sock() as s:
         for i in range(1000):
+            bucket = int(time.time()/interval)*interval if interval > 0 else 0   # calculate bucket
             data, addr = s.recvfrom(65535)  # receive all datas from socket
             ns.recv_packet(data)
     print(ns.tcpstats)
