@@ -27,7 +27,7 @@ class sniff_sock:
 
 from .decoders.__packet_headers__ import Tcp
 from .decoders.decoder import *
-from collections import Counter
+from collections import Counter, deque
 import time
 
 
