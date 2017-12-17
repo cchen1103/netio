@@ -29,6 +29,7 @@ from .decoders.__packet_headers__ import Tcp
 from .decoders.decoder import *
 from collections import Counter, deque
 import time
+import re
 
 
 class NetStats:
@@ -153,8 +154,8 @@ class NetStats:
                     dst, st = self._track_tcp_session(*tcp_out) # get tcp status on the destination connection
                     if dst is not None: # only add to counter if a valid status is returned
                         self.tcpstats.update([(dst, st)])
-                except DecodeException:
-                    pass
+            except DecodeException:
+                pass
     def _track_tcp_session(self, src, dst, flag):
         """
         track tcp session status
