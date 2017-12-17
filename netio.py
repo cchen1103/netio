@@ -117,9 +117,8 @@ class NetStats:
                 del(self.addr_filter[f])
     def _filer_addr(self, src):
         for f in self.addr_filter:
+            f="^" + f +"$" if not f.startswith(':') else f + "$"
             for a in src:
-                print(f,a)
-                f="^" + f +"$" if not f.startswith(':') else f + "$"
                 if re.search(f, a):
                     return True
         return False
@@ -151,7 +150,7 @@ class NetStats:
         if self.tcp_enabled:    # tcp stats
             try:
                 *tcp_out, proto = decode_tcp(data)
-                if self._filer_addr(tcp_out):
+                if self._filer_addr(tcp_out[:2]):
                     dst, st = self._track_tcp_session(*tcp_out) # get tcp status on the destination connection
                     if dst is not None: # only add to counter if a valid status is returned
                         self.tcpstats.update([(dst, st)])
