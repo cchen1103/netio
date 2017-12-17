@@ -118,8 +118,9 @@ class NetStats:
     def _filer_addr(self, src):
         for f in self.addr_filter:
             for a in src:
-                f="^" + f if not f.startswith(':') else f
-                if re.search("f$", a):
+                print(f,a)
+                f="^" + f +"$" if not f.startswith(':') else f + "$"
+                if re.search(f, a):
                     return True
         return False
     def recv_packet(self, data):
