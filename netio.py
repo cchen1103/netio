@@ -101,7 +101,7 @@ class NetStats:
         input: integer, number of sample would module to hold for tcp rr time. None for unbound
         """
         self._max_session_sample = val
-    def add_filter(self, data):
+    def add_filter(self, *data):
         """
         input:  string of ip port or ip:port.
                 - all ip for specific port, use ':port'
@@ -111,7 +111,7 @@ class NetStats:
         for f in data:
             if f not in self.addr_filter:
                 self.addr_filter.append(f)
-    def remove_filter(self, data):
+    def remove_filter(self, *data):
         for f in data:
             if f in self.addr_filter:
                 del(self.addr_filter[f])
@@ -215,7 +215,7 @@ class NetStats:
 def main():
     ns = NetStats()
     ns.tcp_enabled = True
-    ns.add_filter(':9000','80')
+    ns.add_filter(':9000',':80')
     interval = 10
     with sniff_sock() as s:
         for i in range(1000):
