@@ -44,6 +44,7 @@ class NetStats:
         self.tcpstats = Counter()
         self.session_t = dict()     # tcp session time
         self._tcp_track = dict()    # internal tracking tcp connection status
+        self.addr_filter = []    # list of filter by address (ip or ip:port)
     @property
     def ethernet_enabled(self):
         return self._ethernet_enabled
@@ -99,6 +100,27 @@ class NetStats:
         input: integer, number of sample would module to hold for tcp rr time. None for unbound
         """
         self._max_session_sample = val
+    def add_filter(self, data):
+        """
+        input:  string of ip port or ip:port.
+                - all ip for specific port, use ':port'
+                - ip and port, use 'ip:port'
+                - ip only, only 'ip'
+        """
+        for f in data:
+            if f not in self.addr_filter:
+                self.addr_filter.append(f)
+    def remove_filter(self, data):
+        for f in data:
+            if f in self.addr_filter:
+                del(self.addr_filter[f])
+    def _filer_addr(self, src):
+        for f in self.addr_filter:
+            for a in src:
+                f="^" + f if not f.startswith(':') else f
+                if re.search("f$", a):
+                    return True
+        return False
     def recv_packet(self, data):
         """
         received ethernet packet added into NetStats
@@ -106,29 +128,33 @@ class NetStats:
         if self.ethernet_enabled:   # ethernet counter
             try:
                 *eth_out, proto = decode_eth(data)
-                self.netstats.update([tuple(sorted(eth_out))])
+                if self._filer_addr(eth_out):
+                    self.netstats.update([tuple(sorted(eth_out))])
             except DecodeException:
                 pass
         if self.ip_enabled: # ip counter
             try:
                 *ip_out, proto = decode_ip(data)
-                self.ipstats.update([tuple(sorted(ip_out))])
+                if self._filer_addr(ip_out):
+                    self.ipstats.update([tuple(sorted(ip_out))])
             except DecodeException:
                 pass
         if self.udp_enabled:    # udp counter
             try:
                 *udp_out, proto = decode_udp(data)
-                self.udpstats.update([tuple(sorted(udp_out))])
+                if self._filer_addr(udp_out):
+                    self.udpstats.update([tuple(sorted(udp_out))])
             except DecodeException:
                 pass
         if self.tcp_enabled:    # tcp stats
             try:
                 *tcp_out, proto = decode_tcp(data)
-                dst, st = self._track_tcp_session(*tcp_out) # get tcp status on the destination connection
-                if dst is not None: # only add to counter if a valid status is returned
-                    self.tcpstats.update([(dst, st)])
-            except DecodeException:
-                pass
+                if self._filer_addr(tcp_out):
+                    dst, st = self._track_tcp_session(*tcp_out) # get tcp status on the destination connection
+                    if dst is not None: # only add to counter if a valid status is returned
+                        self.tcpstats.update([(dst, st)])
+                except DecodeException:
+                    pass
     def _track_tcp_session(self, src, dst, flag):
         """
         track tcp session status
@@ -188,6 +214,7 @@ class NetStats:
 def main():
     ns = NetStats()
     ns.tcp_enabled = True
+    ns.add_filter(':9000','80')
     interval = 10
     with sniff_sock() as s:
         for i in range(1000):
