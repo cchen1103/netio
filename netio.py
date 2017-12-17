@@ -150,6 +150,7 @@ class NetStats:
         if self.tcp_enabled:    # tcp stats
             try:
                 *tcp_out, proto = decode_tcp(data)
+                print(tcp_out)
                 if self._filer_addr(tcp_out[:2]):
                     dst, st = self._track_tcp_session(*tcp_out) # get tcp status on the destination connection
                     if dst is not None: # only add to counter if a valid status is returned
@@ -218,7 +219,7 @@ def main():
     ns.add_filter(':9000',':80')
     interval = 10
     with sniff_sock() as s:
-        for i in range(1000):
+        for i in range(100000):
             bucket = int(time.time()/interval)*interval if interval > 0 else 0   # calculate bucket
             data, addr = s.recvfrom(65535)  # receive all datas from socket
             ns.recv_packet(data)
