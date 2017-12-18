@@ -219,9 +219,11 @@ def main():
     ns.add_filter(':9000',':80')
     interval = 10
     with sniff_sock() as s:
-        for i in range(10000):
-            bucket = int(time.time()/interval)*interval if interval > 0 else 0   # calculate bucket
-            data, addr = s.recvfrom(65535)  # receive all datas from socket
-            ns.recv_packet(data)
-    print(ns.tcpstats)
-    print(ns.session_t)
+        while True:
+            for i in range(10000):
+                bucket = int(time.time()/interval)*interval if interval > 0 else 0   # calculate bucket
+                data, addr = s.recvfrom(65535)  # receive all datas from socket
+                ns.recv_packet(data)
+            print(ns.tcpstats)
+            print(ns.session_t)
+            ns.tcpstats.clear()
