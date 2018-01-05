@@ -22,7 +22,7 @@ class _Stats:
     def abs_dst_stats(self):
         return dict(self.dst_count.most_common())
     def abs_stats(self):
-        return dict(self.src_count + self.dst_count).most_common())
+        return dict((self.src_count + self.dst_count).most_common())
 
 
 class Ethstats(_Stats):
