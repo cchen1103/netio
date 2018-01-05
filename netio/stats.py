@@ -9,7 +9,7 @@ class _Stats:
         self.decoder = decoder
     def __call__(self, data):
         try:
-            src, dst, proto = decoder(data)
+            src, dst, proto = self.decoder(data)
             self.src_count.update(src)
             self.dst_count.update(dst)
         except DecodeException:
