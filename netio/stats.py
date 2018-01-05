@@ -10,8 +10,8 @@ class _Stats:
     def __call__(self, data):
         try:
             src, dst, proto = self.decoder(data)
-            self.src_count.update(src)
-            self.dst_count.update(dst)
+            self.src_count.update([src])
+            self.dst_count.update([dst])
         except DecodeException:
             pass
     def reset(self):
