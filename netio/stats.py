@@ -1,5 +1,5 @@
 from collections import Counter
-from .decoders.decoders import *
+from .decoders.decoder import *
 
 
 class _Stats:

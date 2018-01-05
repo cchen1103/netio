@@ -2,29 +2,6 @@ import os
 
 is_admin = lambda: os.getuid() == 0
 
-import socket
-
-class sniff_sock:
-    """
-    create execution on creating socket, listening to network traffic and destroy it
-    when the sniffing completes.
-    """
-    def __init__(self):
-        self.s = None
-    def __enter__(self):
-        """
-        create a socket to sniff internet traffic on IP protocol
-        """
-        self.s = socket.socket(socket.PF_PACKET, socket.SOCK_RAW, socket.ntohs(0x0003))
-        return self.s
-    def __exit__(self, type, value, traceback):
-        """
-        destroy the socket and free all resources
-        """
-        if self.s is not None:
-            self.s.close()
-
-
 from .decoders.__packet_headers__ import Tcp
 from .decoders.decoder import *
 from collections import Counter, deque
@@ -213,17 +190,14 @@ class NetStats:
         return dst, 'a'
 
 
+from .util.sock import sniff_sock
+from stats import *
+
+
 def main():
-    ns = NetStats()
-    ns.tcp_enabled = True
-    ns.add_filter(':9000',':80')
-    interval = 10
+    ipstat = Ipstats()
     with sniff_sock() as s:
-        while True:
-            for i in range(10000):
-                bucket = int(time.time()/interval)*interval if interval > 0 else 0   # calculate bucket
-                data, addr = s.recvfrom(65535)  # receive all datas from socket
-                ns.recv_packet(data)
-            print(ns.tcpstats)
-            print(ns.session_t)
-            ns.tcpstats.clear()
+        for i in range(10000):
+            bucket = int(time.time()/interval)*interval if interval > 0 else 0   #calculate bucket
+            data, addr = s.recvfrom(65535)  # receive all datas from socket
+            ipstat(data)
