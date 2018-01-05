@@ -118,7 +118,7 @@ class NetStats:
     def _filer_addr(self, src):
         for f in self.addr_filter:
             f = f +"$" if f.startswith(':') else f
-            f = "^" + f if not f.startswith(':') else f
+            f = "^" + f + r'\b' if not f.startswith(':') else f + r'\b'
             for a in src:
                 if re.search(f, a):
                     return True
