@@ -1,5 +1,5 @@
 from collections import Counter
-from .decoders.decoder import decode_eth, decode_ip, decode_udp, decode_tcp
+from .decoders.decoder import decode_eth, decode_ip, decode_udp, decode_tcp, DecodeException
 
 
 def _tcp_udp_conn(data):
